@@ -2,7 +2,7 @@
 ## Project 00
 ### NeXTCS
 ### Period: 10
-## Name0: YOUR NAME HERE
+## Name0: LUCIA MERCONE
 ## Name1: VERONIKA DUVANOVA
 ---
 
@@ -26,59 +26,51 @@ All projects will require the following:
 ## Phase 0: Force Selection, Analysis & Plan
 ---------- 
 
-#### Custom Force: NAME OF YOUR FORCE
+#### Custom Force: Contact Force
 
 ### Forumla
-What is the formula for your force? Including descriptions/definitions for the symbols. (You may include a picture of the formula if it is not easily typed.)
+V.this(contact) = V.this((m.this - m.other)/(m.this + m.other)) + V.other((2m.other)/(m.this + m.other)
 
 YOUR ANSWER HERE
 
 ### Custom Force
 - What information that is already present in the `Orb` or `OrbNode` classes does this force use?
-  - YOUR ANSWER HERE
+  - orb mass
+  - orb velocity
 
 - Does this force require any new constants, if so what are they and what values will you try initially?
-  - YOUR ANSWER HERE
+  - N/A
 
 - Does this force require any new information to be added to the `Orb` class? If so, what is it and what data type will you use?
-  - YOUR ANSWER HERE
+  - N/A
 
 - Does this force interact with other `Orbs`, or is it applied based on the environment?
-  - YOUR ANSWER HERE
+  - yes, it depends on collision between orbs
 
 - In order to calculate this force, do you need to perform extra intermediary calculations? If so, what?
-  - YOUR ANSWER HERE
+  - no, this solves for the velocity directly rather than solving for force and applying it
 
 --- 
 
 ### Simulation 1: Gravity
-Describe how you will attempt to simulate orbital motion.
+We will create a fixed orb in the center, and randomly generate orbs around it. We can use the equation F = mv^2 / r where m is the mass of the orbiting object, v is it's velocity, and r is the distance between their centers.
 
 --- 
 
 ### Simulation 2: Spring
-Describe what your spring simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
+It will create a fixed orb which will connect a string of other orbs, which will use the distance between the orbs to create a push/pull force depending on how streched out the springs are and the initial spring length.
 
 --- 
 
 ### Simulation 3: Drag
-Describe what your drag simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
+It will apply the drag force depending on a drag coefficient in different areas where the areas will be visualized using colors.
 
 --- 
 
-### Simulation 4: Custom force
-Describe what your Custom force simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
+### Simulation 4: Collision
+We will apply all balls to have the collision force, which upon contact they will collide. We will also add a ball centered at the mouse so that other balls will collide with the user's mouse.
 
 --- 
 
 ### Simulation 5: Combination
-Describe what your combination simulation will look like. Explain how it will be setup, and how it should behave while running.
-
-YOUR ANSWER HERE
-
+We will combine gravity, collision, and drag to create a scene where planets circulate around the sun, but you are able to push the planets around with your mouse, and the planets are able to collide with each other.
