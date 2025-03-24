@@ -31,8 +31,6 @@ All projects will require the following:
 ### Forumla
 V.this(contact) = V.this((m.this - m.other)/(m.this + m.other)) + V.other((2m.other)/(m.this + m.other)
 
-YOUR ANSWER HERE
-
 ### Custom Force
 - What information that is already present in the `Orb` or `OrbNode` classes does this force use?
   - orb mass
