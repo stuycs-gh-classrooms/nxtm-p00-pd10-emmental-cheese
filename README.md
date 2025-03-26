@@ -66,7 +66,7 @@ It will apply the drag force depending on a drag coefficient in different areas 
 --- 
 
 ### Simulation 4: Collision
-We will apply all balls to have the collision force, which upon contact they will collide. We will also add a ball centered at the mouse so that other balls will collide with the user's mouse.
+We will apply all balls to have the collision force, which upon contact they will collide. We will also add a ball centered at the mouse so that other balls will collide with the user's mouse and be appropriately displaced.
 
 --- 
 
