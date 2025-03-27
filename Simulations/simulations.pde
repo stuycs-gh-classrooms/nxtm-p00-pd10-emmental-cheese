@@ -1,3 +1,9 @@
+//planets orbit fixed orb, use array of orbs
+//spring force with fixed orb, use linked lists
+//drag force involves 2+ orbs moving thru 2+ areas w diff drag
+//no limits on custom force
+
+
 int NUM_ORBS = 10;
 int MIN_SIZE = 10;
 int MAX_SIZE = 60;
