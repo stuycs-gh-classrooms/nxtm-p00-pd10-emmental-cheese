@@ -34,34 +34,48 @@ String[] types = {"Orbit", "Spring", "Drag", "Collision", "Combination"};
 //FixedOrb earth;
 
 Orb[] slinky;
+OrbList linkedChain;
 FixedOrb earth;
 
 boolean simi;
 
 void setup() {
   size(600, 600);
-  earth = null; //new FixedOrb(width/2, height * 200, 1, 20000)
-  simi = false;
   
+  earth = new FixedOrb(width/2, height * 200, 1, 8000);
+  
+  simi = false;
+
   slinky = new Orb [5];
-  for (int i = 0; i < slinky.length; i++){
+  for (int i = 0; i < slinky.length; i++) {
     int randomX = int (random(width));
     int randomY = int (random(height));
-    int randomSize = int (random(20,30));
-    int randomMass = int (random(20,30));
+    int randomSize = int (random(20, 30));
+    int randomMass = int (random(20, 30));
     slinky[i] = new Orb(randomX, randomY, randomSize, randomMass);
   }
+
+  linkedChain = new OrbList();
+  linkedChain.populate(NUM_ORBS, true);
 }//setup
 
 void draw() {
   background(255);
   displayMode();
-  if (toggles[MOVING]) {
-    if (toggles[BOUNCE]) {
-    }
-  }
+
   if (!simi) {
-    //normal gravity
+    for (int i = 0; i < slinky.length; i++) {
+      slinky[i].display();
+          if (toggles[MOVING]) {
+            if (toggles[GRAVITY]) {
+              slinky[i].applyForce(slinky[i].getGravity(earth, G_CONSTANT));
+            }
+            if (toggles[DRAGSIM]) {
+              slinky[i].applyForce(slinky[i].getDragForce(DRAG_FORCE));
+            }
+            slinky[i].move(toggles[BOUNCE]);
+          }
+    }
   }
 
   //////////////////////////////////////////////SIMULATIONS
@@ -69,6 +83,18 @@ void draw() {
 
 
   //> Springs
+  if (simulations[SPRING]) {
+    linkedChain.display();
+
+    if (toggles[MOVING]) {
+      linkedChain.applySprings(SPRING_LENGTH, SPRING_K);
+        //print("gravity");
+        linkedChain.applyGravity(earth, G_CONSTANT);
+      
+      linkedChain.run(toggles[BOUNCE]);
+      }
+    }
+  
 
 
   //> Drag
@@ -79,9 +105,13 @@ void draw() {
     fill(#F0F0F0);
     rect (0, height / 2, width, height / 4);
     //apply drag force 2
-      for (int i = 0; i < slinky.length; i++){
-    slinky[i].display();
-  }
+    for (int i = 0; i < slinky.length; i++) {
+      slinky[i].display();
+          if (toggles[MOVING]) {
+          //APPLY DRAG FORCES HERE :D
+          //DONT FORGET TO RESET SLINKY FOR BOTH THIS AND NO SIMULATIONS
+    }
+    }
   }
 
   //> Collision
@@ -97,16 +127,16 @@ void keyPressed() {
     simi = !simi;
   }
   if (key == ' ') {
-      toggles[MOVING] = !toggles[MOVING];
-      print("MOVINGGGG"); //print(toggles[MOVING]);
-    }
-    if (key == 'b') {
-      toggles[BOUNCE] = !toggles[BOUNCE];
-      print("BOUNCEEEEEE"); //print(toggles[BOUNCE]);
-    }
-    
+    toggles[MOVING] = !toggles[MOVING];
+    print("MOVINGGGG"); //print(toggles[MOVING]);
+  }
+  if (key == 'b') {
+    toggles[BOUNCE] = !toggles[BOUNCE];
+    print("BOUNCEEEEEE"); //print(toggles[BOUNCE]);
+  }
+
   if (!simi) {
-        if (key == 'g') {
+    if (key == 'g') {
       toggles[GRAVITY] = !toggles[GRAVITY];
     }
     if (key == 'd') {
@@ -144,7 +174,7 @@ void keyPressed() {
 
 void simSwitcher(boolean[] list) {
   for (int i = 0; i < list.length; i++) {
-      list[i] = false;
+    list[i] = false;
   }
 }
 
@@ -156,21 +186,20 @@ void displayMode() {
 
   for (int m=0; m<toggles.length; m++) {
     //set box color
- if (!simi || (simi && m < 2)) {
+    if (!simi || (simi && m < 2)) {
       if (toggles[m]) {
-        print(m);
+        //print(m);
         fill(0, 255, 0);
-      } 
-      else {
+      } else {
         fill(200, 0, 0);
       }
-    } 
-    
+    }
+
     if (simi) {
       if (toggles[m] && m > 2) {
-        print(m);
+        //print(m);
         fill(0, 255, 0);
-      } 
+      }
     }
 
     float w = textWidth(modes[m]);
@@ -179,7 +208,7 @@ void displayMode() {
     text(modes[m], x+2, 0);
     x+= w+5;
   }
-  
+
   x = 0;
 
   for (int n=0; n<simulations.length; n++) {
@@ -190,8 +219,7 @@ void displayMode() {
       } else {
         fill(200, 0, 0);
       }
-    } 
-    else {
+    } else {
       fill(#050505);
     }
 
