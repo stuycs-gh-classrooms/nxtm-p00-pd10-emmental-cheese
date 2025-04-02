@@ -7,6 +7,8 @@
 //TO-DO
 /**
 - Add mouse sensing
+- centripetal force?
+- cosmetic things?
 */
 
 int NUM_ORBS = 10;
@@ -146,27 +148,24 @@ void draw() {
                  // if (i < 5 && (orblet[i].collisionCheck(orblet[i - 1]))){
     //  orblet[i].collisionDrive(orblet[i - 1]);
      // }
-     
-   //  void collisionDrive(Orb other){
- // PVector a = this.velocity.copy();
- // PVector b = other.velocity.copy();
-//  this.velocity = b;
- // other.velocity = a.mult(-1);
-//}
-          for (int i = 1; i < slinky.length; i++) {
+//ADD EDGE CASES / FLOOR CASES (stackin!!!)
+    for (int i = 1; i < slinky.length; i++) {
       if (slinky[i - 1].collisionCheck(slinky[i])){
        println("boing");
-       fill(#000000);
-      //slinky[i - 1].velocity =  slinky[i - 1].applyForce(slinky[i - 1].getBounceForce(slinky[i]));
-          println("init:" + slinky[i].velocity + "/final: " + slinky[i].getBounceForce(slinky[i - 1]));
-          slinky[i - 1].velocity = slinky[i].velocity.copy();
-          slinky[i].velocity.mult(-1);
+       //slinky[i - 1].applyForce(slinky[i - 1].getBounceForce(slinky[i]));
+        //slinky[i].applyForce((slinky[i].getBounceForce(slinky[i - 1])));
+        
+          println("init:" + slinky[i - 1].velocity + "/final: " + slinky[i - 1].getBounceForce(slinky[i]));
+           PVector a = slinky[i].velocity.copy();
+  PVector b = slinky[i - 1].velocity.copy();
+  slinky[i - 1].velocity = b;
+  slinky[i].velocity = a.mult(-1);
       }
       //add wind
       
       slinky[i - 1].display();
       if (toggles[MOVING]) {
-        PVector flatGrav = new PVector(random(-0.1, 0.1), random(2, 15));
+        PVector flatGrav = new PVector(random(-0.1, 0.1), random(2, 15));/////////////////////
         slinky[i - 1].applyForce(flatGrav);
         slinky[i - 1].move(toggles[BOUNCE]);
       }

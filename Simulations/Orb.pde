@@ -93,7 +93,7 @@ class Orb {
     
     finalForce.x = -1 * v2fx;
     finalForce.y = -1 * v2fy;
-    return finalForce.mult(10);
+    return finalForce;
   }
   
   //spring force between calling orb and other
