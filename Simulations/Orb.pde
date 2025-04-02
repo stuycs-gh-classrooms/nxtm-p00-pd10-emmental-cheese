@@ -67,6 +67,35 @@ class Orb {
     return force;
   }
 
+  PVector getBounceForce(Orb other) {
+    PVector v1i = this.velocity.copy();
+    PVector v2i = other.velocity.copy();
+    
+    PVector finalForce = new PVector();
+    
+    float v1ix = v1i.x;
+    float v1iy = v1i.y;
+    float v2ix = v2i.x;
+    float v2iy = v2i.y;
+    
+    float sumMass = this.mass + other.mass;
+    //v1i + v1f = v2i + v2f 
+    //v1f = v2f + (v2i - v1i)
+    //thus 
+    //m1iv1i + m2iv2i = m1fv1f + m2fv2f
+    //=
+    //m1v1i + m2v2i = m1(v2f + (v2i - v1i)) + m2v2f
+    //m1v1i + m2v2i - m1v2i + m1v1i = m1v2f + m2v2f
+    //a number = m1 + m2(v2f)
+    //div by m1 + m2
+    float v2fx = ((this.mass * v1ix) + (other.mass * v2ix) - (this.mass * v2ix) + (this.mass * v1ix)) / sumMass;
+    float v2fy = ((this.mass * v1iy) + (other.mass * v2iy) - (this.mass * v2iy) + (this.mass * v1iy)) / sumMass;
+    
+    finalForce.x = -1 * v2fx;
+    finalForce.y = -1 * v2fy;
+    return finalForce.mult(10);
+  }
+  
   //spring force between calling orb and other
   PVector getSpring(Orb other, int springLength, float springK) {
     PVector direction = PVector.sub(other.center, this.center);

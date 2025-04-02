@@ -4,6 +4,11 @@
 //no limits on custom force
 
 
+//TO-DO
+/**
+- Add mouse sensing
+*/
+
 int NUM_ORBS = 10;
 int MIN_SIZE = 10;
 int MAX_SIZE = 60;
@@ -56,7 +61,6 @@ void setup() {
 
 void draw() {
   background(255);
-  displayMode();
 
   if (!simi) {
     for (int i = 0; i < slinky.length; i++) {
@@ -104,24 +108,75 @@ void draw() {
 
   //> Drag
   if (simulations[DRAGSIM]) {
+    float COEF_1 = 1;
+    float COEF_2 = 0.1;
+    float COEF_3 = -0.05;
+    fill(#405040);
+    rect (0, 0, width, 1 * (height / 4)); //upper
     fill(#505050);
-    rect (0, 3 * (height / 4), width, 3 * (height / 4));
-    //apply drag force 1
+    rect (0, 3 * (height / 4), width, 3 * (height / 4)); //center
     fill(#F0F0F0);
-    rect (0, height / 2, width, height / 4);
-    //apply drag force 2
+    rect (0, height / 2, width, height / 4); //lower
+    fill(0);
+    text (COEF_1, 10, height / 6);
+    text (COEF_2, 10, height / 2);
+    text (COEF_3, 10,  3 * (height / 4) + 10);
     for (int i = 0; i < slinky.length; i++) {
+            if (slinky[i].center.y < 1 * (height / 4)){ // upper. slows down orbs made bouncy by lower.
+        slinky[i].applyForce(slinky[i].getDragForce(COEF_1));
+      }
+      if (slinky[i].center.y > 3 * (height / 4) && slinky[i].center.y < height / 2 ){ //center. does its job.
+        slinky[i].applyForce(slinky[i].getDragForce(COEF_2));
+      }
+       if (slinky[i].center.y > height / 2){ //bottom. has negative drag for fun, and also keeps the simulation moving by not allowing them to collect at the bottom.
+              slinky[i].applyForce(slinky[i].getDragForce(COEF_3));
+      }
+      
       slinky[i].display();
       if (toggles[MOVING]) {
-        //APPLY DRAG FORCES HERE :D
+        slinky[i].applyForce(slinky[i].getGravity(earth, G_CONSTANT));
+        slinky[i].move(toggles[BOUNCE]);
       }
     }
   }
 
   //> Collision
-
+    if (simulations[COLLISION]) {
+  //see getBounceForce for mess...
+                 // if (i < 5 && (orblet[i].collisionCheck(orblet[i - 1]))){
+    //  orblet[i].collisionDrive(orblet[i - 1]);
+     // }
+     
+   //  void collisionDrive(Orb other){
+ // PVector a = this.velocity.copy();
+ // PVector b = other.velocity.copy();
+//  this.velocity = b;
+ // other.velocity = a.mult(-1);
+//}
+          for (int i = 1; i < slinky.length; i++) {
+      if (slinky[i - 1].collisionCheck(slinky[i])){
+       println("boing");
+       fill(#000000);
+      //slinky[i - 1].velocity =  slinky[i - 1].applyForce(slinky[i - 1].getBounceForce(slinky[i]));
+          println("init:" + slinky[i].velocity + "/final: " + slinky[i].getBounceForce(slinky[i - 1]));
+          slinky[i - 1].velocity = slinky[i].velocity.copy();
+          slinky[i].velocity.mult(-1);
+      }
+      //add wind
+      
+      slinky[i - 1].display();
+      if (toggles[MOVING]) {
+        PVector flatGrav = new PVector(random(-0.1, 0.1), random(2, 15));
+        slinky[i - 1].applyForce(flatGrav);
+        slinky[i - 1].move(toggles[BOUNCE]);
+      }
+    }
+    }
 
   //> Combination
+  
+  
+    displayMode();
 }//draw
 
 void createNewSlinky() {
