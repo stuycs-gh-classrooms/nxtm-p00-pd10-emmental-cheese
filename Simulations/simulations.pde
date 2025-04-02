@@ -35,28 +35,23 @@ String[] types = {"Orbit", "Spring", "Drag", "Collision", "Combination"};
 
 Orb[] slinky;
 OrbList linkedChain;
+
 FixedOrb earth;
+FixedOrb sun;
 
 boolean simi;
 
 void setup() {
   size(600, 600);
-  
-  earth = new FixedOrb(width/2, height * 200, 1, 8000);
-  
-  simi = false;
 
-  slinky = new Orb [5];
-  for (int i = 0; i < slinky.length; i++) {
-    int randomX = int (random(width));
-    int randomY = int (random(height));
-    int randomSize = int (random(20, 30));
-    int randomMass = int (random(20, 30));
-    slinky[i] = new Orb(randomX, randomY, randomSize, randomMass);
-  }
+  earth = new FixedOrb(width/2, height * 100, 1, 8000);
+  sun = new FixedOrb(width/2, height/2, MAX_SIZE, MAX_MASS);
+
+  simi = false;
 
   linkedChain = new OrbList();
   linkedChain.populate(NUM_ORBS, true);
+  createNewSlinky();
 }//setup
 
 void draw() {
@@ -66,20 +61,30 @@ void draw() {
   if (!simi) {
     for (int i = 0; i < slinky.length; i++) {
       slinky[i].display();
-          if (toggles[MOVING]) {
-            if (toggles[GRAVITY]) {
-              slinky[i].applyForce(slinky[i].getGravity(earth, G_CONSTANT));
-            }
-            if (toggles[DRAGSIM]) {
-              slinky[i].applyForce(slinky[i].getDragForce(DRAG_FORCE));
-            }
-            slinky[i].move(toggles[BOUNCE]);
-          }
+      if (toggles[MOVING]) {
+        if (toggles[GRAVITY]) {
+          slinky[i].applyForce(slinky[i].getGravity(earth, G_CONSTANT));
+        }
+        if (toggles[DRAGSIM]) {
+          slinky[i].applyForce(slinky[i].getDragForce(D_COEF));
+        }
+        slinky[i].move(toggles[BOUNCE]);
+      }
     }
   }
 
   //////////////////////////////////////////////SIMULATIONS
-  //> Gravity
+  //> Orbit
+  if (simulations[ORBIT]) {
+    sun.display();
+    for (int i = 0; i < slinky.length; i++) {
+      slinky[i].display();
+      if (toggles[MOVING]) {
+        slinky[i].applyForce(slinky[i].getGravity(sun, G_CONSTANT));
+        slinky[i].move(toggles[BOUNCE]);
+      }
+    }
+  }
 
 
   //> Springs
@@ -88,13 +93,13 @@ void draw() {
 
     if (toggles[MOVING]) {
       linkedChain.applySprings(SPRING_LENGTH, SPRING_K);
-        //print("gravity");
-        linkedChain.applyGravity(earth, G_CONSTANT);
-      
+      //print("gravity");
+      linkedChain.applyGravity(earth, G_CONSTANT);
+
       linkedChain.run(toggles[BOUNCE]);
-      }
     }
-  
+  }
+
 
 
   //> Drag
@@ -107,10 +112,9 @@ void draw() {
     //apply drag force 2
     for (int i = 0; i < slinky.length; i++) {
       slinky[i].display();
-          if (toggles[MOVING]) {
-          //APPLY DRAG FORCES HERE :D
-          //DONT FORGET TO RESET SLINKY FOR BOTH THIS AND NO SIMULATIONS
-    }
+      if (toggles[MOVING]) {
+        //APPLY DRAG FORCES HERE :D
+      }
     }
   }
 
@@ -120,11 +124,25 @@ void draw() {
   //> Combination
 }//draw
 
+void createNewSlinky() {
+  slinky = new Orb [NUM_ORBS];
+  for (int i = 0; i < slinky.length; i++) {
+    int randomX = int (random(MAX_SIZE/2, width - MAX_SIZE/2));
+    int randomY = int (random(MAX_SIZE/2, height - MAX_SIZE/2));
+    int randomSize = int (random(MIN_SIZE, MAX_SIZE));
+    int randomMass = int (random(MIN_MASS, MAX_MASS));
+    slinky[i] = new Orb(randomX, randomY, randomSize, randomMass);
+  }
+}
+
 void keyPressed() {
   if (keyCode == ENTER) {
     simSwitcher(simulations);
     simSwitcher(toggles);
     simi = !simi;
+  }
+  if (key == 'r') {
+   createNewSlinky(); 
   }
   if (key == ' ') {
     toggles[MOVING] = !toggles[MOVING];
@@ -145,8 +163,14 @@ void keyPressed() {
   }
   if (simi) {
     if (key == '1') {
+      createNewSlinky();
       simSwitcher(simulations);
       simulations[ORBIT] = !simulations[ORBIT];
+
+      for (int i = 0; i < slinky.length; i++) {
+        slinky[i].velocity.x = 10;
+        slinky[i].velocity.y = 10;
+      }
       //print("ORBIT");
     }
     if (key == '2') {
@@ -155,16 +179,19 @@ void keyPressed() {
       //print("SPRING");
     }
     if (key == '3') {
+      createNewSlinky();
       simSwitcher(simulations);
       simulations[DRAGSIM] = !simulations[DRAGSIM];
       //print("DRAG");
     }
     if (key == '4') {
       //print("COLLISIONS");
+      //createNewSlinky();
       simSwitcher(simulations);
       simulations[COLLISION] = !simulations[COLLISION];
     }
     if (key == '5') {
+      createNewSlinky();
       simSwitcher(simulations);
       simulations[COMBINATION] = !simulations[COMBINATION];
       //print("COMBO");
