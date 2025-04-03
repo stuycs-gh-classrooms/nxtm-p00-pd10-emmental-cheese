@@ -115,9 +115,9 @@ class Orb {
 
       return true;
     }//bottom bounce
-    else if (center.y < bsize/2) {
+    else if (center.y < (bsize/2 + 50)) {
       velocity.y*= -1;
-      center.y = bsize/2;
+      center.y = bsize/2 + 50;
       return true;
     }
     return false;

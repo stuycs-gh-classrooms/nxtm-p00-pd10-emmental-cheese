@@ -35,10 +35,10 @@ int DRAGSIM = 2;
 int COLLISION = 3;
 int COMBINATION = 4;
 boolean[] toggles = new boolean[4];
-String[] modes = {"Moving", "Bounce", "Gravity", "Drag"};
+String[] modes = {"Moving [SPACE]", "Bounce [B]", "Gravity [G]", "Drag [D]"};
 
 boolean[] simulations = new boolean[5];
-String[] types = {"Orbit", "Spring", "Drag", "Collision", "Combination"};
+String[] types = {"Orbit [1]", "Spring [2]", "Drag [3]", "Collision [4]", "Combination [5]"};
 
 //FixedOrb earth;
 
@@ -90,9 +90,10 @@ void draw() {
   //////////////////////////////////////////////SIMULATIONS
   //> Orbit
   if (simulations[ORBIT]) {
-    c = (#030D40);
+    c = (#0B1A3E);
     for (int i = 0; i < stars.length - 1; i++){ //to-do for further cuteness -> generate for loop that regenerates random() every second
          fill(#FFFFFF);
+        noStroke();
         circle(stars[i].x, stars[i].y, random(0.5, 1.5));
        }
     sun.display();
@@ -165,8 +166,8 @@ void draw() {
     for (int i = 1; i < slinky.length; i++) {
       if (slinky[i - 1].collisionCheck(slinky[i])){
        println("boing");
-      slinky[i - 1].applyForce(slinky[i - 1].getBounceForce(slinky[i]));
-        slinky[i].applyForce((slinky[i].getBounceForce(slinky[i - 1])));
+      slinky[i - 1].velocity = (slinky[i - 1].getBounceForce(slinky[i]));
+       // slinky[i].applyForce((slinky[i].getBounceForce(slinky[i - 1])));
         
           println("init:" + slinky[i - 1].velocity + "/final: " + slinky[i - 1].getBounceForce(slinky[i]));
           /* PVector a = slinky[i].velocity.copy();
@@ -189,6 +190,10 @@ void draw() {
   
   
     displayMode();
+    fill(#F0F0F0);
+    rect (width - 200, 0, 200, 25);
+    fill(0);
+    text ("Toggle mode [ENTER]", width - 190, 5);
 }//draw
 
 void createNewSlinky() {
@@ -306,9 +311,9 @@ void displayMode() {
     }
 
     float w = textWidth(modes[m]);
-    rect(x, 0, w+5, 20);
+    rect(x, 0, w+7, 25);
     fill(0);
-    text(modes[m], x+2, 0);
+    text(modes[m], x+3, 5);
     x+= w+5;
   }
 
@@ -327,9 +332,9 @@ void displayMode() {
     }
 
     float w = textWidth(types[n]);
-    rect(x, 20, w+5, 20);
+    rect(x, 25, w+7, 25);
     fill(0);
-    text(types[n], x+2, 22);
+    text(types[n], x+3, 30);
     x+= w+5;
   }
 }//display
