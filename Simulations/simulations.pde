@@ -1,3 +1,5 @@
+
+
 //planets orbit fixed orb, use array of orbs
 //spring force with fixed orb, use linked lists
 //drag force involves 2+ orbs moving thru 2+ areas w diff drag
@@ -40,19 +42,25 @@ String[] types = {"Orbit", "Spring", "Drag", "Collision", "Combination"};
 
 //FixedOrb earth;
 
+PVector[] stars;
 Orb[] slinky;
 OrbList linkedChain;
 
 FixedOrb earth;
 FixedOrb sun;
 
+color c;
+
 boolean simi;
 
 void setup() {
+  c = (255);
   size(600, 600);
 
   earth = new FixedOrb(width/2, height * 100, 1, 8000);
   sun = new FixedOrb(width/2, height/2, MAX_SIZE, MAX_MASS);
+  sun.c = #FBFF86;
+  stars = new PVector[132];
 
   simi = false;
 
@@ -62,7 +70,7 @@ void setup() {
 }//setup
 
 void draw() {
-  background(255);
+  background(c);
 
   if (!simi) {
     for (int i = 0; i < slinky.length; i++) {
@@ -82,6 +90,11 @@ void draw() {
   //////////////////////////////////////////////SIMULATIONS
   //> Orbit
   if (simulations[ORBIT]) {
+    c = (#030D40);
+    for (int i = 0; i < stars.length - 1; i++){ //to-do for further cuteness -> generate for loop that regenerates random() every second
+         fill(#FFFFFF);
+        circle(stars[i].x, stars[i].y, random(0.5, 1.5));
+       }
     sun.display();
     for (int i = 0; i < slinky.length; i++) {
       slinky[i].display();
@@ -152,14 +165,14 @@ void draw() {
     for (int i = 1; i < slinky.length; i++) {
       if (slinky[i - 1].collisionCheck(slinky[i])){
        println("boing");
-       //slinky[i - 1].applyForce(slinky[i - 1].getBounceForce(slinky[i]));
-        //slinky[i].applyForce((slinky[i].getBounceForce(slinky[i - 1])));
+      slinky[i - 1].applyForce(slinky[i - 1].getBounceForce(slinky[i]));
+        slinky[i].applyForce((slinky[i].getBounceForce(slinky[i - 1])));
         
           println("init:" + slinky[i - 1].velocity + "/final: " + slinky[i - 1].getBounceForce(slinky[i]));
-           PVector a = slinky[i].velocity.copy();
+          /* PVector a = slinky[i].velocity.copy();
   PVector b = slinky[i - 1].velocity.copy();
   slinky[i - 1].velocity = b;
-  slinky[i].velocity = a.mult(-1);
+  slinky[i].velocity = a.mult(-1);*/
       }
       //add wind
       
@@ -220,6 +233,12 @@ void keyPressed() {
       createNewSlinky();
       simSwitcher(simulations);
       simulations[ORBIT] = !simulations[ORBIT];
+      
+      
+      //stars
+      for (int i = 0; i < 132; i++){
+        stars[i] = new PVector (random(width), random(height));
+      }
 
       for (int i = 0; i < slinky.length; i++) {
         slinky[i].velocity.x = 10;
@@ -228,6 +247,7 @@ void keyPressed() {
       //print("ORBIT");
     }
     if (key == '2') {
+      //////////////////////////////////////////////////////////////////ADD A 'CREATE NEW LINKED LIST' PART HERE
       simSwitcher(simulations);
       simulations[SPRING] = !simulations[SPRING];
       //print("SPRING");
@@ -239,8 +259,8 @@ void keyPressed() {
       //print("DRAG");
     }
     if (key == '4') {
-      //print("COLLISIONS");
-      //createNewSlinky();
+      print("COLLISIONS");
+      createNewSlinky();
       simSwitcher(simulations);
       simulations[COLLISION] = !simulations[COLLISION];
     }
@@ -256,13 +276,15 @@ void keyPressed() {
 void simSwitcher(boolean[] list) {
   for (int i = 0; i < list.length; i++) {
     list[i] = false;
+    c = (255);
   }
 }
 
 void displayMode() {
   textAlign(LEFT, TOP);
   textSize(20);
-  noStroke();
+  stroke (0);
+  strokeWeight (2);
   int x = 0;
 
   for (int m=0; m<toggles.length; m++) {
