@@ -88,11 +88,11 @@ class Orb {
     //m1v1i + m2v2i - m1v2i + m1v1i = m1v2f + m2v2f
     //a number = m1 + m2(v2f)
     //div by m1 + m2
-    float v2fx = ((this.mass * v1ix) + (other.mass * v2ix) - (this.mass * v2ix) + (this.mass * v1ix)) / sumMass;
-    float v2fy = ((this.mass * v1iy) + (other.mass * v2iy) - (this.mass * v2iy) + (this.mass * v1iy)) / sumMass;
+    float v1fx = (((1) / (this.mass + other.mass)) * v1ix) + (((2 * other.mass) / (this.mass + other.mass)) * v2ix);
+    float v1fy = (((1) / (this.mass + other.mass)) * v1iy) + (((2 * other.mass) / (this.mass + other.mass)) * v2iy);
     
-    finalForce.x = -1 * v2fx;
-    finalForce.y = -1 * v2fy;
+    finalForce.x = -v1fx;
+    finalForce.y = -v1fy;
     return finalForce;
   }
   

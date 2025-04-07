@@ -1,11 +1,3 @@
-
-
-//planets orbit fixed orb, use array of orbs
-//spring force with fixed orb, use linked lists
-//drag force involves 2+ orbs moving thru 2+ areas w diff drag
-//no limits on custom force
-
-
 //TO-DO
 /**
 - Add mouse sensing
@@ -13,6 +5,7 @@
 - cosmetic things?
 */
 
+//GLOBAL VARIABLES
 int NUM_ORBS = 10;
 int MIN_SIZE = 10;
 int MAX_SIZE = 60;
@@ -34,36 +27,46 @@ int SPRING = 1;
 int DRAGSIM = 2;
 int COLLISION = 3;
 int COMBINATION = 4;
+
+//SIMULATION TOGGLING
 boolean[] toggles = new boolean[4];
 String[] modes = {"Moving [SPACE]", "Bounce [B]", "Gravity [G]", "Drag [D]"};
-
 boolean[] simulations = new boolean[5];
 String[] types = {"Orbit [1]", "Spring [2]", "Drag [3]", "Collision [4]", "Combination [5]"};
 
-//FixedOrb earth;
-
+//SIMULATION ORBS
 PVector[] stars;
 Orb[] slinky;
 OrbList linkedChain;
-
 FixedOrb earth;
-FixedOrb sun;
+FixedOrb[] sun;
 
+//OTHER
 color c;
-
 boolean simi;
 
 void setup() {
   c = (255);
   size(600, 600);
 
+  //CREATE FIXED ORBS
   earth = new FixedOrb(width/2, height * 100, 1, 8000);
-  sun = new FixedOrb(width/2, height/2, MAX_SIZE, MAX_MASS);
-  sun.c = #FBFF86;
+  
+  sun = new FixedOrb[3];
+  for (int i = 0; i < sun.length; i++) {
+    //create fields of intensity 'around' sun
+    sun[i] = new FixedOrb(width/2, height/2, MAX_SIZE + 60*i, MAX_MASS - 60*i);
+    sun[i].c = color(82*(3-i), 80*(3-i), 23*(3-i));
+        //251 - 3 = 248 / 3 = 82
+        //255 - 13 = 242 / 3 = 80 
+        //134 - 64 = 70 / 3 = 23
+
+  }
   stars = new PVector[132];
 
   simi = false;
 
+  //CREATE MOVING ORBS
   linkedChain = new OrbList();
   linkedChain.populate(NUM_ORBS, true);
   createNewSlinky();
@@ -72,6 +75,7 @@ void setup() {
 void draw() {
   background(c);
 
+  //REGULAR ORB MANIPULATION
   if (!simi) {
     for (int i = 0; i < slinky.length; i++) {
       slinky[i].display();
@@ -87,20 +91,23 @@ void draw() {
     }
   }
 
-  //////////////////////////////////////////////SIMULATIONS
-  //> Orbit
+  //ORBIT SIMULATION
   if (simulations[ORBIT]) {
-    c = (#0B1A3E);
+    c = color(3,13,64);
     for (int i = 0; i < stars.length - 1; i++){ //to-do for further cuteness -> generate for loop that regenerates random() every second
          fill(#FFFFFF);
-        noStroke();
+         noStroke();
         circle(stars[i].x, stars[i].y, random(0.5, 1.5));
        }
-    sun.display();
+    for (int i=sun.length - 1; i > -1; i--) {
+      sun[i].display();
+    }
     for (int i = 0; i < slinky.length; i++) {
       slinky[i].display();
       if (toggles[MOVING]) {
-        slinky[i].applyForce(slinky[i].getGravity(sun, G_CONSTANT));
+        for (int o = 0; o < sun.length; o++) {
+        slinky[i].applyForce(slinky[i].getGravity(sun[o], G_CONSTANT));
+        }
         slinky[i].move(toggles[BOUNCE]);
       }
     }
@@ -158,29 +165,17 @@ void draw() {
 
   //> Collision
     if (simulations[COLLISION]) {
-  //see getBounceForce for mess...
-                 // if (i < 5 && (orblet[i].collisionCheck(orblet[i - 1]))){
-    //  orblet[i].collisionDrive(orblet[i - 1]);
-     // }
 //ADD EDGE CASES / FLOOR CASES (stackin!!!)
     for (int i = 1; i < slinky.length; i++) {
       if (slinky[i - 1].collisionCheck(slinky[i])){
        println("boing");
-      slinky[i - 1].velocity = (slinky[i - 1].getBounceForce(slinky[i]));
-       // slinky[i].applyForce((slinky[i].getBounceForce(slinky[i - 1])));
-        
+        slinky[i - 1].velocity = slinky[i- 1].getBounceForce(slinky[i]);
           println("init:" + slinky[i - 1].velocity + "/final: " + slinky[i - 1].getBounceForce(slinky[i]));
-          /* PVector a = slinky[i].velocity.copy();
-  PVector b = slinky[i - 1].velocity.copy();
-  slinky[i - 1].velocity = b;
-  slinky[i].velocity = a.mult(-1);*/
       }
       //add wind
       
       slinky[i - 1].display();
       if (toggles[MOVING]) {
-        PVector flatGrav = new PVector(random(-0.1, 0.1), random(2, 15));/////////////////////
-        slinky[i - 1].applyForce(flatGrav);
         slinky[i - 1].move(toggles[BOUNCE]);
       }
     }
@@ -190,10 +185,10 @@ void draw() {
   
   
     displayMode();
-    fill(#F0F0F0);
-    rect (width - 200, 0, 200, 25);
+    fill(#F00FF0);
+    rect (width - 190, 0, 200, 25);
     fill(0);
-    text ("Toggle mode [ENTER]", width - 190, 5);
+    text ("Toggle mode [ENTER]", width - 185, 5);
 }//draw
 
 void createNewSlinky() {
@@ -215,14 +210,13 @@ void keyPressed() {
   }
   if (key == 'r') {
    createNewSlinky(); 
+   generateRandoVect(slinky);
   }
   if (key == ' ') {
     toggles[MOVING] = !toggles[MOVING];
-    print("MOVINGGGG"); //print(toggles[MOVING]);
   }
   if (key == 'b') {
     toggles[BOUNCE] = !toggles[BOUNCE];
-    print("BOUNCEEEEEE"); //print(toggles[BOUNCE]);
   }
 
   if (!simi) {
@@ -264,16 +258,15 @@ void keyPressed() {
       //print("DRAG");
     }
     if (key == '4') {
-      print("COLLISIONS");
       createNewSlinky();
       simSwitcher(simulations);
+      generateRandoVect(slinky);
       simulations[COLLISION] = !simulations[COLLISION];
     }
     if (key == '5') {
       createNewSlinky();
       simSwitcher(simulations);
       simulations[COMBINATION] = !simulations[COMBINATION];
-      //print("COMBO");
     }
   }
 }//keyPressed
@@ -296,7 +289,6 @@ void displayMode() {
     //set box color
     if (!simi || (simi && m < 2)) {
       if (toggles[m]) {
-        //print(m);
         fill(0, 255, 0);
       } else {
         fill(200, 0, 0);
@@ -311,10 +303,10 @@ void displayMode() {
     }
 
     float w = textWidth(modes[m]);
-    rect(x, 0, w+7, 25);
+    rect(x, 0, w+10, 25);
     fill(0);
-    text(modes[m], x+3, 5);
-    x+= w+5;
+    text(modes[m], x+5, 5);
+    x+= w+10;
   }
 
   x = 0;
@@ -332,9 +324,17 @@ void displayMode() {
     }
 
     float w = textWidth(types[n]);
-    rect(x, 25, w+7, 25);
+    rect(x, 25, w+10, 25);
     fill(0);
-    text(types[n], x+3, 30);
-    x+= w+5;
+    text(types[n], x+5, 30);
+    x+= w+10;
   }
 }//display
+
+
+void generateRandoVect(Orb[] list){
+  for (int i = 0; i < list.length; i++){
+    PVector newForce = new PVector(random(-5,5), random(-5,5));
+    list[i].velocity = newForce;
+  }
+}
