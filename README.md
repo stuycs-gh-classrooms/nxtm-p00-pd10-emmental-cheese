@@ -46,7 +46,8 @@ V.this(contact) = V.this((m.this - m.other)/(m.this + m.other)) + V.other((2m.ot
   - yes, it depends on collision between orbs
 
 - In order to calculate this force, do you need to perform extra intermediary calculations? If so, what?
-  - no, this solves for the velocity directly rather than solving for force and applying it
+  - yes - first we have to find the magnitude of the velocities, find the theta of both balls' directions, find the theta of collision, and multiply them out in an equation
+  https://williamecraver.wixsite.com/elastic-equations
 
 --- 
 
